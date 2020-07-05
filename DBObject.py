@@ -83,7 +83,7 @@ class DBObject:
                 cadena += f'''{vals[a] if type(vals[a]) is not str else "'" + vals[a] + "'"}'''
                 cantidad_operadores -= 1
                 if cantidad_operadores > 0:
-                    cadena += ' and '
+                    cadena += ', '
 
         if no_names and no_values and is_where:
             raise Exception('No se que le llego al armar campos')

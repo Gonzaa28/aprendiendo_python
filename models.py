@@ -1,56 +1,14 @@
+import datetime
+
 from DBObject import DBObject
 
-'''
-class Persona(DBObject):
-    id_name = 'idPersona'  # este es el nombre del campo id
-    table_name = 'persona'  # este es el nombre de la tabla
-
-    def __init__(self, **kwargs):  # el id se manda solo como id, no como sea que lo llamaron uds en la bd
-        super(Persona, self).__init__(kwargs.get('id', 0))  # Empezar los constructores siempre asi
-        self.nombre = kwargs.get('nombre', None)  # El segundo parametro es el valor por defecto si no mandaron nombre
-        self.dni = kwargs.get('dni', None)
-        self.apellido = kwargs.get('apellido')
-
-    def __str__(self):
-        return f'''{self.nombre}, {self.apellido} - {self.dni}'''
-
-    # Tambien pueden  sobreescribir los metodos que hice yo por si quieren cambiar alguna funcionalidad, por ejemplo traer otros objetos
-
-
-class Vuelo(DBObject):
-    id_name = 'idVuelo'
-    table_name = 'vuelo'
-
-    def __init__(self, **kwargs):
-        super(Vuelo, self).__init__(kwargs.get('id', 0))
-        self.piloto = kwargs.get('piloto', None)
-        self.fecha = kwargs.get('fecha', None)
-
-    @classmethod
-    def get(cls, id):
-        retorno = super(Vuelo, cls).get(id)
-        retorno.piloto = Persona.get(retorno.piloto)  # asi me traigo el objeto asociado
-        return retorno
-
-
-class Pasajero(DBObject):
-    id_name = "dni"
-    table_name = "pasajero"
-
-    def __init__(self, **kwargs):
-        super(Pasajero, self).__init__(kwargs.get('id', 0))
-        self.dni = kwargs.get('dni', 0)
-        self.apellido = kwargs.get('apellido', "")
-        self.nombre = kwargs.get('nombre', "")
-        self.es_viajero_frecuente = kwargs.get('es_viajero_frecuente', 0)
-'''
 
 class Usuario(DBObject):
     id_name = "idusuario"
     table_name = "usuario"
 
     def __init__(self, **kwargs):
-        super(Usuario, self).__init__(kwargs.get("id", 0))
+        super(Usuario, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.username = kwargs.get("username", None)
         self.password = kwargs.get("password", None)
         self.type = kwargs.get("type", None)
@@ -88,9 +46,10 @@ class Vuelo(DBObject):
 
     def __init__(self, **kwargs):
         super(Vuelo, self).__init__(kwargs.get("id", 0))
-        self.fecha = kwargs.get("fecha", None)
+        self.fecha = kwargs.get("fecha", datetime.datetime.today().date().strftime('%Y-%m-%d'))
         self.asientos_libres = kwargs.get("asientos_libres", 0)
         self.precio = kwargs.get("precio", 0)
+        self.completado = kwargs.get('completado', 0)
 
 
 class Ubicacion(DBObject):
@@ -122,7 +81,7 @@ class Avion(DBObject):
 
     def __init__(self, **kwargs):
         super(Avion, self).__init__(kwargs.get("id", 0))
-        self.ultimo_mantenimiento = kwargs.get("ultimo_mantenimiento", None)
+        self.ultimo_mantenimiento = kwargs.get("ultimo_mantenimiento", datetime.datetime.today().date().strftime('%Y-%m-%d'))
 
 
 class Modelo(DBObject):
@@ -131,10 +90,20 @@ class Modelo(DBObject):
 
     def __init__(self, **kwargs):
         super(Modelo, self).__init__(kwargs.get("id", 0))
-        self.nombre = kwargs.get("nombre", None)
+        self.nombre = kwargs.get("nombre", '')
         self.cantidad_asientos = kwargs.get("cantidad_asientos", 0)
         self.coste = kwargs.get("coste", 0)
-        self.fecha_fabricacion = kwargs.get("fecha_fabricacion", None)
+        self.fecha_fabricacion = kwargs.get("fecha_fabricacion", datetime.datetime.today().date().strftime('%Y-%m-%d'))
+        self.marca = kwargs.get('marca', None)
+
+    def __str__(self):
+        return f'{str(self.marca)} {str(self.nombre)} ({self.fecha_fabricacion}) - ${self.cantidad_asientos}'
+
+    @classmethod
+    def get(cls, obj_id):
+        retorno = super(Modelo, cls).get(obj_id)
+        retorno.marca = Marca.get(retorno.marca)
+        return retorno
 
 
 class Marca(DBObject):
@@ -142,7 +111,8 @@ class Marca(DBObject):
     table_name = "marca"
 
     def __init__(self, **kwargs):
-        super(Marca, self).__init__(kwargs.get("id", 0))
+        super(Marca, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.nombre = kwargs.get("nombre", None)
 
-
+    def __str__(self):
+        return self.nombre
