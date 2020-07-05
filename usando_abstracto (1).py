@@ -1,4 +1,4 @@
-from abstract_conector import DBObject
+from DBObject import DBObject
 
 '''
 class Persona(DBObject):
