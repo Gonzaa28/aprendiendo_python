@@ -25,6 +25,7 @@ class Pasajero(DBObject):
         self.dni = kwargs.get("dni", None)
         self.saldo = kwargs.get("saldo", 0)
         self.es_viajero_frecuente = kwargs.get("es_viajero_frecuente", 0)
+        self.usuario = kwargs.get("usuario", 0)
 
 
 class Piloto(DBObject):
@@ -38,6 +39,7 @@ class Piloto(DBObject):
         self.dni = kwargs.get("dni", None)
         self.legajo = kwargs.get("legajo", None)
         self.sueldo = kwargs.get("saldo", 0)
+        self.esta_en = kwargs.get("esta_en", 0)
 
 
 class Vuelo(DBObject):
@@ -50,6 +52,9 @@ class Vuelo(DBObject):
         self.asientos_libres = kwargs.get("asientos_libres", 0)
         self.precio = kwargs.get("precio", 0)
         self.completado = kwargs.get('completado', 0)
+        self.avion = kwargs.get("avion", 0)
+        self.origen = kwargs.get("origen", 0)
+        self.destino = kwargs.get("destino", 0)
 
 
 class Ubicacion(DBObject):
@@ -73,6 +78,7 @@ class Aeropuerto(DBObject):
         super(Aeropuerto, self).__init__(kwargs.get("id", 0))
         self.nombre = kwargs.get("nombre", None)
         self.saldo = kwargs.get("saldo", 0)
+        self.ubicacion = kwargs.get("ubicacion", 0)
 
 
 class Avion(DBObject):
@@ -82,6 +88,8 @@ class Avion(DBObject):
     def __init__(self, **kwargs):
         super(Avion, self).__init__(kwargs.get("id", 0))
         self.ultimo_mantenimiento = kwargs.get("ultimo_mantenimiento", datetime.datetime.today().date().strftime('%Y-%m-%d'))
+        self.modelo = kwargs.get("modelo", 0)
+        self.esta_en = kwargs.get("esta_en", 0)
 
 
 class Modelo(DBObject):

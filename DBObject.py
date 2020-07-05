@@ -4,7 +4,7 @@ import mysql.connector as conn
 class DBObject:
     id_name = "id"
     table_name = ""
-    db = conn.connect(host="localhost", user="root", password="root", database="aprendiendo_python")
+    db = conn.connect(host="localhost", user="root", password="Jumpman234512_", database="aprendiendo_python")
     exclude_fields = []  # una lista de string con los nombres de los atributos que no se persisten
 
     def __init__(self, obj_id=0):
