@@ -41,7 +41,7 @@ class Piloto(DBObject):
 
 
 class Vuelo(DBObject):
-    id_name = "idVuelo"
+    id_name = "idvuelo"
     table_name = "vuelo"
 
     def __init__(self, **kwargs):
