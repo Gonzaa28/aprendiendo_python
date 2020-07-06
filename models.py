@@ -13,6 +13,9 @@ class Usuario(DBObject):
         self.password = kwargs.get("password", None)
         self.type = kwargs.get("type", None)
 
+    def __str__(self):
+        return f'{str(self.username)} {str(self.password)} {str(self.type)}'
+
 
 class Pasajero(DBObject):
     id_name = "idpasajero"
@@ -27,6 +30,15 @@ class Pasajero(DBObject):
         self.es_viajero_frecuente = kwargs.get("es_viajero_frecuente", 0)
         self.usuario = kwargs.get("usuario", 0)
 
+    def __str__(self):
+        return  f'{str(self.usuario)} {str(self.nombre)} {str(self.apellido)} {str(self.dni)} ${self.saldo} {self.es_viajero_frecuente}'
+
+    @classmethod
+    def get(cls, obj_id):
+        retorno = super(Pasajero, cls).get(obj_id)
+        retorno.usuario = Usuario.get(retorno.usuario)
+        return retorno
+
 
 class Piloto(DBObject):
     id_name = "idpiloto"
@@ -38,8 +50,17 @@ class Piloto(DBObject):
         self.apellido = kwargs.get("apellido", None)
         self.dni = kwargs.get("dni", None)
         self.legajo = kwargs.get("legajo", None)
-        self.sueldo = kwargs.get("saldo", 0)
+        self.sueldo = kwargs.get("sueldo", 0)
         self.esta_en = kwargs.get("esta_en", 0)
+
+    def __str__(self):
+        return  f'{str(self.esta_en)} {str(self.nombre)} {str(self.apellido)} {str(self.dni)} {str(self.legajo)} ${self.sueldo}'
+
+    @classmethod
+    def get(cls, obj_id):
+        retorno = super(Piloto, cls).get(obj_id)
+        retorno.esta_en = Aeropuerto.get(retorno.esta_en)
+        return retorno
 
 
 class Vuelo(DBObject):
@@ -56,6 +77,18 @@ class Vuelo(DBObject):
         self.origen = kwargs.get("origen", 0)
         self.destino = kwargs.get("destino", 0)
 
+    '''
+    def __str__(self):
+        return  f'{str(self.avion)} {str(self.origen)} {str(self.destino)} {str(self.fecha)} {self.asientos_libres} ${self.precio} {self.completado}'
+    
+    @classmethod
+    def get(cls, obj_id):
+        retorno = super(Vuelo, cls).get(obj_id)
+        retorno.avion = Avion.get(retorno.avion)
+        retorno.origen = Aeropuerto.get(retorno.origen)
+        retorno.destino = Aeropuerto.get(retorno.destino)
+        return retorno
+    '''
 
 class Ubicacion(DBObject):
     id_name = "idUbicacion"
@@ -69,6 +102,9 @@ class Ubicacion(DBObject):
         self.provincia = kwargs.get("provincia", None)
         self.direccion = kwargs.get("direccion", None)
 
+    def __str__(self):
+        return f'{self.latitud} {self.longitud} {str(self.pais)} {str(self.provincia)} {str(self.direccion)}'
+
 
 class Aeropuerto(DBObject):
     id_name = "idaeropuerto"
@@ -76,10 +112,21 @@ class Aeropuerto(DBObject):
 
     def __init__(self, **kwargs):
         super(Aeropuerto, self).__init__(kwargs.get("id", 0))
-        self.nombre = kwargs.get("nombre", None)
+        self.nombre = kwargs.get("nombre", "")
         self.saldo = kwargs.get("saldo", 0)
         self.ubicacion = kwargs.get("ubicacion", 0)
 
+    def __str__(self):
+        return  f'{str(self.ubicacion)} {str(self.nombre)} ${self.saldo}'
+
+    @classmethod
+    def get(cls, obj_id):
+        retorno = super(Aeropuerto, cls).get(obj_id)
+        retorno.ubicacion = Ubicacion.get(retorno.ubicacion)
+        return retorno
+
+
+#Problema al guardar un avion en la base de datos
 
 class Avion(DBObject):
     id_name = "idavion"
@@ -91,6 +138,18 @@ class Avion(DBObject):
         self.modelo = kwargs.get("modelo", 0)
         self.esta_en = kwargs.get("esta_en", 0)
 
+    '''
+    def __str__(self):
+        return f'{str(self.esta_en)} {str(self.modelo)} {str(self.ultimo_mantenimiento)}'
+
+    
+    @classmethod
+    def get(cls, obj_id):
+        retorno = super(Avion, cls).get(obj_id)
+        retorno.modelo = Modelo.get(retorno.modelo)
+        retorno.esta_en = Aeropuerto.get(retorno.esta_en)
+        return retorno
+    '''
 
 class Modelo(DBObject):
     id_name = "idmodelo"
@@ -105,7 +164,7 @@ class Modelo(DBObject):
         self.marca = kwargs.get('marca', None)
 
     def __str__(self):
-        return f'{str(self.marca)} {str(self.nombre)} ({self.fecha_fabricacion}) - ${self.cantidad_asientos}'
+        return f'{str(self.marca)} {str(self.nombre)} ({self.fecha_fabricacion}) ${self.coste} {self.cantidad_asientos}'
 
     @classmethod
     def get(cls, obj_id):
