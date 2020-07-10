@@ -4,8 +4,9 @@ import mysql.connector as conn
 class DBObject:
     id_name = "id"
     table_name = ""
-    db = conn.connect(host="localhost", user="root", password="Jumpman234512_", database="aprendiendo_python")
+    db = conn.connect(host="localhost", user="root", password="root", database="aprendiendo_python")
     exclude_fields = []  # una lista de string con los nombres de los atributos que no se persisten
+    foreign_key_fields = []
 
     def __init__(self, obj_id=0):
         self.id = obj_id
@@ -26,7 +27,7 @@ class DBObject:
         cursor.execute(f'select * from {cls.table_name} where {cls.id_name} = {obj_id}')
         return cls(**cursor.fetchone())
 
-    def save(self):
+    def save(self):  # FIXME agregar exclusion de claves foraneas del diccinoario e incluir parametros por kwargs
         cursor = self.db.cursor()
         if self.id == 0:
             cursor.execute(
@@ -66,7 +67,7 @@ class DBObject:
 
         if not no_names and not no_values:  # Si lo pido con nombres y con valores
             for a in vals:
-                cadena += str(a) + f'''={vals[a] if type(vals[a]) is not str else "'" + vals[a] + "'"}'''
+                cadena += str(a) + f'''={vals[a] if type(vals[a]) is not str else "'" + vals[a] + "'"}''' # FIXME agregar las fechassss y para NoneType
                 cantidad_operadores -= 1
                 if cantidad_operadores > 0:
                     cadena += ' and ' if is_where else ', '
