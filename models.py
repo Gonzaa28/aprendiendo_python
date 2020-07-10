@@ -63,9 +63,6 @@ class Piloto(DBObject):
         retorno.esta_en = Aeropuerto.get(retorno.esta_en)
         return retorno
 
-    def save(self):
-        super(Piloto, self).save(esta_en=self.esta_en.id)
-
 
 class Vuelo(DBObject):
     id_name = "idvuelo"
@@ -160,6 +157,7 @@ class Avion(DBObject):
 class Modelo(DBObject):
     id_name = "idmodelo"
     table_name = "modelo"
+    foreign_key_fields = ['marca']
 
     def __init__(self, **kwargs):
         super(Modelo, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
