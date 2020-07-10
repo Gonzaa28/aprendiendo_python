@@ -43,6 +43,7 @@ class Pasajero(DBObject):
 class Piloto(DBObject):
     id_name = "idpiloto"
     table_name = "piloto"
+    foreign_key_fields = ['esta_en', ]
 
     def __init__(self, **kwargs):
         super(Piloto, self).__init__(kwargs.get("id", 0))
@@ -54,13 +55,16 @@ class Piloto(DBObject):
         self.esta_en = kwargs.get("esta_en", 0)
 
     def __str__(self):
-        return  f'{str(self.esta_en)} {str(self.nombre)} {str(self.apellido)} {str(self.dni)} {str(self.legajo)} ${self.sueldo}'
+        return f'{str(self.esta_en)} {str(self.nombre)} {str(self.apellido)} {str(self.dni)} {str(self.legajo)} ${self.sueldo}'
 
     @classmethod
     def get(cls, obj_id):
         retorno = super(Piloto, cls).get(obj_id)
         retorno.esta_en = Aeropuerto.get(retorno.esta_en)
         return retorno
+
+    def save(self):
+        super(Piloto, self).save(esta_en=self.esta_en.id)
 
 
 class Vuelo(DBObject):
@@ -89,6 +93,7 @@ class Vuelo(DBObject):
         retorno.destino = Aeropuerto.get(retorno.destino)
         return retorno
     '''
+
 
 class Ubicacion(DBObject):
     id_name = "idUbicacion"
@@ -151,12 +156,13 @@ class Avion(DBObject):
         return retorno
     '''
 
+
 class Modelo(DBObject):
     id_name = "idmodelo"
     table_name = "modelo"
 
     def __init__(self, **kwargs):
-        super(Modelo, self).__init__(kwargs.get("id", 0))
+        super(Modelo, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.nombre = kwargs.get("nombre", '')
         self.cantidad_asientos = kwargs.get("cantidad_asientos", 0)
         self.coste = kwargs.get("coste", 0)
@@ -170,16 +176,32 @@ class Modelo(DBObject):
     def get(cls, obj_id):
         retorno = super(Modelo, cls).get(obj_id)
         retorno.marca = Marca.get(retorno.marca)
+        retorno.fecha_fabricacion = retorno.fecha_fabricacion.strftime('%Y-%m-%d')
         return retorno
+
+    @classmethod
+    def search(cls, **kwargs):
+        return super(Modelo, cls).search(**kwargs)
 
 
 class Marca(DBObject):
     id_name = "idmarca"
     table_name = "marca"
+    exclude_fields = ['lst_modelos', ]
 
     def __init__(self, **kwargs):
         super(Marca, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.nombre = kwargs.get("nombre", None)
+        self.lst_modelos = kwargs.get('lst_modelos', [])
 
     def __str__(self):
         return self.nombre
+
+    def inicializar_lst_modelos(self):
+        self.lst_modelos = Modelo.search(marca=self.id)
+
+    @classmethod
+    def get(cls, obj_id):
+        retorno = super(Marca, cls).get(obj_id)
+        retorno.inicializar_lst_modelos()
+        return retorno
