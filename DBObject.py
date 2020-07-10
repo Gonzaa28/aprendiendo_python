@@ -57,6 +57,10 @@ class DBObject:
         vals = kwargs.copy()
         for field in cls.exclude_fields:
             vals.pop(field, None)
+
+        for field in cls.foreign_key_fields:
+            vals[field] = vals[field] if type(vals[field]) == int else vals[field].id
+
         for field in vals:
             if type(vals[field]) == datetime.date:
                 vals[field] = vals[field].strftime("%Y-%m-%d")
