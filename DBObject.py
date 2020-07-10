@@ -1,3 +1,5 @@
+import datetime
+
 import mysql.connector as conn
 
 
@@ -55,6 +57,9 @@ class DBObject:
         vals = kwargs.copy()
         for field in cls.exclude_fields:
             vals.pop(field, None)
+        for field in vals:
+            if type(vals[field]) == datetime.date:
+                vals[field] = vals[field].strftime("%Y-%m-%d")
         if no_id:
             vals.pop('id', None) or vals.pop(cls.id_name, None)
         else:
@@ -67,7 +72,10 @@ class DBObject:
 
         if not no_names and not no_values:  # Si lo pido con nombres y con valores
             for a in vals:
-                cadena += str(a) + f'''={vals[a] if type(vals[a]) is not str else "'" + vals[a] + "'"}''' # FIXME agregar las fechassss y para NoneType
+                if vals[a] is not None:
+                    cadena += str(a) + f'''={vals[a] if type(vals[a]) is not str else "'" + vals[a] + "'"}'''
+                else:
+                    cadena += str(a) + f'''=null'''
                 cantidad_operadores -= 1
                 if cantidad_operadores > 0:
                     cadena += ' and ' if is_where else ', '
@@ -81,7 +89,10 @@ class DBObject:
 
         if no_names and not is_where:  # Si lo pido sin nombres
             for a in vals:
-                cadena += f'''{vals[a] if type(vals[a]) is not str else "'" + vals[a] + "'"}'''
+                if vals[a] is not None:
+                    cadena += f'''{vals[a] if type(vals[a]) is not str else "'" + vals[a] + "'"}'''
+                else:
+                    cadena += f'''null'''
                 cantidad_operadores -= 1
                 if cantidad_operadores > 0:
                     cadena += ', '
