@@ -29,7 +29,7 @@ class DBObject:
         cursor.execute(f'select * from {cls.table_name} where {cls.id_name} = {obj_id}')
         return cls(**cursor.fetchone())
 
-    def save(self):  # FIXME agregar exclusion de claves foraneas del diccinoario e incluir parametros por kwargs
+    def save(self):
         cursor = self.db.cursor()
         if self.id == 0:
             cursor.execute(
