@@ -50,7 +50,7 @@ ENGINE = InnoDB;
 -- Table `aprendiendo_python`.`piloto`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `aprendiendo_python`.`piloto` (
-  `idpiloto` INT NOT NULL AUTO_INCREMENT,
+  `idpiloto` INT NOT NULL,
   `nombre` VARCHAR(45) NULL,
   `apellido` VARCHAR(45) NULL,
   `dni` VARCHAR(45) NULL,
@@ -135,18 +135,18 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `aprendiendo_python`.`avion` (
   `idavion` INT NOT NULL AUTO_INCREMENT,
-  `utlimo_mantenimiento` DATE NULL,
+  `ultimo_mantenimiento` DATE NULL,
   `modelo` INT NULL,
   `esta_en` INT NULL,
   PRIMARY KEY (`idavion`),
   INDEX `fk_avion_modelo1_idx` (`modelo` ASC),
-  INDEX `fk_avion_aeropuerto1_idx` (`esta_en` ASC),
+  INDEX `fk_avion_aeropuerto2_idx` (`esta_en` ASC),
   CONSTRAINT `fk_avion_modelo1`
     FOREIGN KEY (`modelo`)
     REFERENCES `aprendiendo_python`.`modelo` (`idmodelo`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_avion_aeropuerto1`
+  CONSTRAINT `fk_avion_aeropuerto2`
     FOREIGN KEY (`esta_en`)
     REFERENCES `aprendiendo_python`.`aeropuerto` (`idaeropuerto`)
     ON DELETE NO ACTION
@@ -163,18 +163,13 @@ CREATE TABLE IF NOT EXISTS `aprendiendo_python`.`vuelo` (
   `asientos_libres` INT NULL,
   `precio` FLOAT NULL,
   `completado` TINYINT NULL,
+  `origen` INT NOT NULL,
+  `destino` INT NOT NULL,
   `avion` INT NULL,
-  `origen` INT NULL,
-  `destino` INT NULL,
-  INDEX `fk_vuelo_avion1_idx` (`avion` ASC),
   PRIMARY KEY (`idvuelo`),
   INDEX `fk_vuelo_aeropuerto1_idx` (`origen` ASC),
   INDEX `fk_vuelo_aeropuerto2_idx` (`destino` ASC),
-  CONSTRAINT `fk_vuelo_avion1`
-    FOREIGN KEY (`avion`)
-    REFERENCES `aprendiendo_python`.`avion` (`idavion`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_vuelo_avion1_idx` (`avion` ASC),
   CONSTRAINT `fk_vuelo_aeropuerto1`
     FOREIGN KEY (`origen`)
     REFERENCES `aprendiendo_python`.`aeropuerto` (`idaeropuerto`)
@@ -183,6 +178,11 @@ CREATE TABLE IF NOT EXISTS `aprendiendo_python`.`vuelo` (
   CONSTRAINT `fk_vuelo_aeropuerto2`
     FOREIGN KEY (`destino`)
     REFERENCES `aprendiendo_python`.`aeropuerto` (`idaeropuerto`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_vuelo_avion1`
+    FOREIGN KEY (`avion`)
+    REFERENCES `aprendiendo_python`.`avion` (`idavion`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -194,7 +194,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `aprendiendo_python`.`vuelo_has_piloto` (
   `vuelo_idVuelo` INT NOT NULL,
   `piloto_idpiloto` INT NOT NULL,
-  PRIMARY KEY (`vuelo_idVuelo`, `piloto_idpiloto`) ,
+  PRIMARY KEY (`vuelo_idVuelo`, `piloto_idpiloto`),
   INDEX `fk_vuelo_has_piloto_piloto1_idx` (`piloto_idpiloto` ASC),
   INDEX `fk_vuelo_has_piloto_vuelo1_idx` (`vuelo_idVuelo` ASC),
   CONSTRAINT `fk_vuelo_has_piloto_vuelo1`
