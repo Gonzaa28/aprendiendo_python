@@ -20,7 +20,7 @@ class Usuario(DBObject):
 class Pasajero(DBObject):
     id_name = "idpasajero"
     table_name = "pasajero"
-    #foreign_key_fields = ['usuario']
+    foreign_key_fields = ['usuario']
 
     def __init__(self, **kwargs):
         super(Pasajero, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
@@ -68,7 +68,7 @@ class Piloto(DBObject):
 class Vuelo(DBObject):
     id_name = "idvuelo"
     table_name = "vuelo"
-    #foreign_key_fields = ['avion', 'origen', 'destino']
+    foreign_key_fields = ['avion', 'origen', 'destino']
 
     def __init__(self, **kwargs):
         super(Vuelo, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
@@ -153,7 +153,7 @@ class Aeropuerto(DBObject):
 class Avion(DBObject):
     id_name = "idavion"
     table_name = "avion"
-    #foreign_key_fields = ['modelo', 'esta_en']
+    foreign_key_fields = ['modelo', 'esta_en']
 
     def __init__(self, **kwargs):
         super(Avion, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
