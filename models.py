@@ -204,6 +204,25 @@ class Modelo(DBObject):
     def search(cls, **kwargs):
         return super(Modelo, cls).search(**kwargs)
 
+    @classmethod
+    def traer_modelos_por_nombre(cls, nombre):
+        modelos = cls.execute_custom_select(f'''where nombre like ('%{nombre}%')''')
+        for m in modelos:
+            m.marca = Marca.get(m.marca)
+            print(m)
+
+    @classmethod
+    def traer_modelos_por_cantidad_asientos(cls, minimo, maximo=None):
+        modelos = []
+        if maximo is not None:
+            modelos = cls.execute_custom_select(f"where cantidad_asientos >= {minimo} and cantidad_asientos <= {maximo}")
+        else:
+            modelos = cls.execute_custom_select(f"where cantidad_asientos >= {minimo}")
+        for m in modelos:
+            m.marca = Marca.get(m.marca)
+        return modelos
+
+
 
 class Marca(DBObject):
     id_name = "idmarca"
