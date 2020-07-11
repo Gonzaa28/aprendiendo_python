@@ -116,8 +116,8 @@ class Ubicacion(DBObject):
 class Aeropuerto(DBObject):
     id_name = "idaeropuerto"
     table_name = "aeropuerto"
-    exclude_fields = ["lst_aviones", ]
-    #foreign_key_fields = ['ubicacion', ]
+    exclude_fields = ["lst_aviones", 'lst_origenes', 'lst_destinos']
+    foreign_key_fields = ['ubicacion', ]
 
     def __init__(self, **kwargs):
         super(Aeropuerto, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
