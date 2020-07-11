@@ -108,7 +108,7 @@ class DBObject:
 
     @classmethod
     def execute_custom_select(cls, where_clause):  # Si se usan id aca tienen que poner el nombre que tiene en la BD
-        q = f'SELECT * FROM {cls.table_name} ' + where_clause
+        q = f'''SELECT * FROM {cls.table_name} ''' + where_clause
         cursor = cls.db.cursor(dictionary=True)
         cursor.execute(q)
         return [cls(**x) for x in cursor.fetchall()]
