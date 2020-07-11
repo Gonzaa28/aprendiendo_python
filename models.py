@@ -204,6 +204,17 @@ class Modelo(DBObject):
     def search(cls, **kwargs):
         return super(Modelo, cls).search(**kwargs)
 
+    @classmethod
+    def traer_modelos_por_nombre(cls, nombre):
+        modelos = cls.execute_custom_select(f'''where nombre like ('%{nombre}%')''')
+        for m in modelos:
+            m.marca = Marca.get(m.marca)
+        return modelos
+
+    @classmethod
+    def traer_modelos_por_cantidad_asientos(cls, minimo, maximo=None):
+        pass
+
 
 class Marca(DBObject):
     id_name = "idmarca"
@@ -226,3 +237,13 @@ class Marca(DBObject):
         retorno = super(Marca, cls).get(obj_id)
         retorno.inicializar_lst_modelos()
         return retorno
+
+
+# TODO
+# Traer vuelos entre fechas (puede o no recibir fechas de inicio y fin)
+# Treaer vuelos por origen (solo uno)
+# Traer aviones por ultimo_mantenimiento (recibe fecha inicio y puede o no recibir fecha fin)
+# traer aeropuertos por nombre (usando la forma contiene, con %nombre%)
+# Traer vuelos por asientos libres (Recibe una canitidad de asientos y debe retornar los que tengan al menos esa cantidad de asientos libres) y por origen y destino (puede o no recibirlos)
+# Traer vuelos por si esta completado o no
+# Traer aeropuertos por pais y provincia (la provincia es opcional). Para esto tienen que hacer select anidado
