@@ -14,15 +14,16 @@ class Usuario(DBObject):
         self.type = kwargs.get("type", None)
 
     def __str__(self):
-        return f'{str(self.username)} {str(self.password)} {str(self.type)}'
+        return f'Usuario: {str(self.username)}, {str(self.password)}, {str(self.type)}'
 
 
 class Pasajero(DBObject):
     id_name = "idpasajero"
     table_name = "pasajero"
+    #foreign_key_fields = ['usuario', ]
 
     def __init__(self, **kwargs):
-        super(Pasajero, self).__init__(kwargs.get("id", 0))
+        super(Pasajero, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.nombre = kwargs.get("nombre", None)
         self.apellido = kwargs.get("apellido", None)
         self.dni = kwargs.get("dni", None)
@@ -31,7 +32,7 @@ class Pasajero(DBObject):
         self.usuario = kwargs.get("usuario", 0)
 
     def __str__(self):
-        return  f'{str(self.usuario)} {str(self.nombre)} {str(self.apellido)} {str(self.dni)} ${self.saldo} {self.es_viajero_frecuente}'
+        return  f'Pasajero: {str(self.nombre)}, {str(self.apellido)}, {str(self.dni)}, ${self.saldo}, {self.es_viajero_frecuente} \n{str(self.usuario)}'
 
     @classmethod
     def get(cls, obj_id):
@@ -46,7 +47,7 @@ class Piloto(DBObject):
     foreign_key_fields = ['esta_en', ]
 
     def __init__(self, **kwargs):
-        super(Piloto, self).__init__(kwargs.get("id", 0))
+        super(Piloto, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.nombre = kwargs.get("nombre", None)
         self.apellido = kwargs.get("apellido", None)
         self.dni = kwargs.get("dni", None)
@@ -55,7 +56,7 @@ class Piloto(DBObject):
         self.esta_en = kwargs.get("esta_en", 0)
 
     def __str__(self):
-        return f'{str(self.esta_en)} {str(self.nombre)} {str(self.apellido)} {str(self.dni)} {str(self.legajo)} ${self.sueldo}'
+        return f'Piloto: {str(self.nombre)}, {str(self.apellido)}, {str(self.dni)}, {str(self.legajo)}, ${self.sueldo} \n{str(self.esta_en)}'
 
     @classmethod
     def get(cls, obj_id):
@@ -67,9 +68,10 @@ class Piloto(DBObject):
 class Vuelo(DBObject):
     id_name = "idvuelo"
     table_name = "vuelo"
+    #foreign_key_fields = ['avion', 'origen', 'destino', ]
 
     def __init__(self, **kwargs):
-        super(Vuelo, self).__init__(kwargs.get("id", 0))
+        super(Vuelo, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.fecha = kwargs.get("fecha", datetime.datetime.today().date().strftime('%Y-%m-%d'))
         self.asientos_libres = kwargs.get("asientos_libres", 0)
         self.precio = kwargs.get("precio", 0)
@@ -78,9 +80,8 @@ class Vuelo(DBObject):
         self.origen = kwargs.get("origen", 0)
         self.destino = kwargs.get("destino", 0)
 
-    '''
     def __str__(self):
-        return  f'{str(self.avion)} {str(self.origen)} {str(self.destino)} {str(self.fecha)} {self.asientos_libres} ${self.precio} {self.completado}'
+        return  f'Vuelo: {str(self.fecha)}, {self.asientos_libres}, ${self.precio}, {self.completado} \n{str(self.avion)} \n{str(self.destino)}'
     
     @classmethod
     def get(cls, obj_id):
@@ -88,8 +89,12 @@ class Vuelo(DBObject):
         retorno.avion = Avion.get(retorno.avion)
         retorno.origen = Aeropuerto.get(retorno.origen)
         retorno.destino = Aeropuerto.get(retorno.destino)
+        retorno.fecha = retorno.fecha.strftime('%Y-%m-%d')
         return retorno
-    '''
+
+    #@classmethod
+    #def search(cls, **kwargs):
+        #return super(Vuelo, cls).search(**kwargs)
 
 
 class Ubicacion(DBObject):
@@ -97,7 +102,7 @@ class Ubicacion(DBObject):
     table_name = "ubicacion"
 
     def __init__(self, **kwargs):
-        super(Ubicacion, self).__init__(kwargs.get("id", 0))
+        super(Ubicacion, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.latitud = kwargs.get("latitud", 0)
         self.longitud = kwargs.get("longitud", 0)
         self.pais = kwargs.get("pais", None)
@@ -105,59 +110,77 @@ class Ubicacion(DBObject):
         self.direccion = kwargs.get("direccion", None)
 
     def __str__(self):
-        return f'{self.latitud} {self.longitud} {str(self.pais)} {str(self.provincia)} {str(self.direccion)}'
+        return f'Ubicacion: {self.latitud}, {self.longitud}, {str(self.pais)}, {str(self.provincia)}, {str(self.direccion)}'
 
 
 class Aeropuerto(DBObject):
     id_name = "idaeropuerto"
     table_name = "aeropuerto"
+    exclude_fields = ["lst_aviones", ]
+    #foreign_key_fields = ['ubicacion', ]
 
     def __init__(self, **kwargs):
-        super(Aeropuerto, self).__init__(kwargs.get("id", 0))
+        super(Aeropuerto, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.nombre = kwargs.get("nombre", "")
         self.saldo = kwargs.get("saldo", 0)
         self.ubicacion = kwargs.get("ubicacion", 0)
+        self.lst_aviones = kwargs.get('lst_aviones', [])
+        self.lst_origenes = kwargs.get('lst_origenes', [])
+        self.lst_destinos = kwargs.get('lst_destinos', [])
 
     def __str__(self):
-        return  f'{str(self.ubicacion)} {str(self.nombre)} ${self.saldo}'
+        return  f'Aeropuerto: {str(self.nombre)}, ${self.saldo} \n{str(self.ubicacion)}'
+
+    def inicializar_lst_aviones(self):
+        self.lst_aviones = Avion.search(esta_en=self.id)
+
+    def inicializar_lst_origenes(self):
+        self.lst_origenes = Vuelo.search(origen=self.id)
+
+    def inicializar_lst_destinos(self):
+        self.lst_destinos = Vuelo.search(destino=self.id)
 
     @classmethod
     def get(cls, obj_id):
         retorno = super(Aeropuerto, cls).get(obj_id)
         retorno.ubicacion = Ubicacion.get(retorno.ubicacion)
+        retorno.inicializar_lst_aviones()
+        retorno.inicializar_lst_origenes()
+        retorno.inicializar_lst_destinos()
         return retorno
 
-
-#Problema al guardar un avion en la base de datos
 
 class Avion(DBObject):
     id_name = "idavion"
     table_name = "avion"
+    #foreign_key_fields = ['modelo', 'esta_en', ]
 
     def __init__(self, **kwargs):
-        super(Avion, self).__init__(kwargs.get("id", 0))
+        super(Avion, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
         self.ultimo_mantenimiento = kwargs.get("ultimo_mantenimiento", datetime.datetime.today().date().strftime('%Y-%m-%d'))
         self.modelo = kwargs.get("modelo", 0)
         self.esta_en = kwargs.get("esta_en", 0)
 
-    '''
     def __str__(self):
-        return f'{str(self.esta_en)} {str(self.modelo)} {str(self.ultimo_mantenimiento)}'
-
+        return f'Avion: {str(self.ultimo_mantenimiento)} \n{str(self.modelo)} \n{str(self.esta_en)}'
     
     @classmethod
     def get(cls, obj_id):
         retorno = super(Avion, cls).get(obj_id)
         retorno.modelo = Modelo.get(retorno.modelo)
         retorno.esta_en = Aeropuerto.get(retorno.esta_en)
+        retorno.ultimo_mantenimiento = retorno.ultimo_mantenimiento.strftime('%Y-%m-%d')
         return retorno
-    '''
+
+    @classmethod
+    def search(cls, **kwargs):
+        return super(Avion, cls).search(**kwargs)
 
 
 class Modelo(DBObject):
     id_name = "idmodelo"
     table_name = "modelo"
-    foreign_key_fields = ['marca']
+    foreign_key_fields = ['marca', ]
 
     def __init__(self, **kwargs):
         super(Modelo, self).__init__(kwargs.get(self.id_name, None) or kwargs.get("id", 0))
@@ -168,7 +191,7 @@ class Modelo(DBObject):
         self.marca = kwargs.get('marca', None)
 
     def __str__(self):
-        return f'{str(self.marca)} {str(self.nombre)} ({self.fecha_fabricacion}) ${self.coste} {self.cantidad_asientos}'
+        return f'Modelo: {str(self.nombre)}, ({self.fecha_fabricacion}), ${self.coste}, {self.cantidad_asientos} \n{str(self.marca)}'
 
     @classmethod
     def get(cls, obj_id):
@@ -193,7 +216,7 @@ class Marca(DBObject):
         self.lst_modelos = kwargs.get('lst_modelos', [])
 
     def __str__(self):
-        return self.nombre
+        return f'Marca: {self.nombre}'
 
     def inicializar_lst_modelos(self):
         self.lst_modelos = Modelo.search(marca=self.id)
